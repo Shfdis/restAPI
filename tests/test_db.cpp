@@ -62,6 +62,8 @@ TEST_CASE("test insert/delete queries") {
   for (size_t iterations = 0; iterations < 100; ++iterations) {
     int inserts = rand() % 10;
     vector<std::string> names;
+    DatabaseConnection connection(
+        "/home/shfdis/CLionProjects/restAPI/tests/db");
     while (inserts--) {
       std::string name = std::to_string(inserts);
       RequestValue req = InsertRequest::Insert("alan")
@@ -69,8 +71,7 @@ TEST_CASE("test insert/delete queries") {
                              .Values(std::vector<std::string>{name})
                              .Finalize();
       names.push_back(name);
-      DatabaseConnection connection(
-          "/home/shfdis/CLionProjects/restAPI/tests/db");
+
       connection.Exec(req, 2);
     }
     for (auto name : names) {
@@ -78,12 +79,8 @@ TEST_CASE("test insert/delete queries") {
                              .From("alan")
                              .Where("Name==" + name)
                              .Finalize();
-      DatabaseConnection connection(
-          "/home/shfdis/CLionProjects/restAPI/tests/db");
       connection.Exec(req, 2);
     }
-    DatabaseConnection connection(
-        "/home/shfdis/CLionProjects/restAPI/tests/db");
     RequestValue req = SelectRequest::Select("*").From("alan").Finalize();
     REQUIRE(connection.Exec(req, 2).size() == 1);
   }
