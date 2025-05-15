@@ -16,23 +16,23 @@ using tcp = asio::ip::tcp;
 
 class Server {
 public:
-    explicit Server(asio::io_context &context, const std::string& cert_file, const std::string& key_file);
-    ~Server();
+  explicit Server(asio::io_context &context, const std::string& cert_file, const std::string& key_file);
+  ~Server();
 
-    void run();
-    void stop();
+  void run();
+  void stop();
 
-    Router router_;
+  Router router_;
 
 private:
-    void accept_connections();
-    void handle_request(std::shared_ptr<beast::ssl_stream<tcp::socket>> stream);
+  void accept_connections();
+  void handle_request(std::shared_ptr<beast::ssl_stream<tcp::socket>> stream);
 
-    asio::io_context &context_;
-    ssl::context ssl_ctx_;
-    tcp::acceptor acceptor_;
-    asio::signal_set signals_;
-    std::atomic<bool> running_{false};
+  asio::io_context &context_;
+  ssl::context ssl_ctx_;
+  tcp::acceptor acceptor_;
+  asio::signal_set signals_;
+  std::atomic<bool> running_{false};
 };
 
 #endif

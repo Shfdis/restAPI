@@ -10,13 +10,12 @@ add_subdirectory(db)
 find_package(Boost 1.66 REQUIRED COMPONENTS system thread)
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
-find_package(SQLite3 REQUIRED)
 target_link_libraries(restAPI PRIVATE
         Boost::system
         Boost::thread
         OpenSSL::SSL
         OpenSSL::Crypto
         Threads::Threads
-        SQLite3
 )
 target_link_libraries(restAPI PUBLIC network_handler)
+target_link_libraries(restAPI PUBLIC db)
