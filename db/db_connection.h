@@ -5,36 +5,36 @@
 #ifndef DB_CONNECTION_H
 #define DB_CONNECTION_H
 
-#include <boost/shared_ptr.hpp>
 #include <sqlite3.h>
+
+#include <boost/shared_ptr.hpp>
+
 #include "request.h"
 
 class DatabaseConnection {
-public:
-    enum Error {
-        error,
-        ok
-    };
+ public:
+  enum Error { error, ok };
 
-private:
-    sqlite3 *db = nullptr;
-    std::function<void(Error, std::vector<std::string>, std::vector<std::string>)> callback_;
+ private:
+  sqlite3 *db = nullptr;
+  std::function<void(Error, std::vector<std::string>, std::vector<std::string>)>
+      callback_;
 
-public:
-    explicit DatabaseConnection(const std::string &db_path);
+ public:
+  explicit DatabaseConnection(const std::string &db_path);
 
-    DatabaseConnection(const DatabaseConnection &) = delete;
+  DatabaseConnection(const DatabaseConnection &) = delete;
 
-    DatabaseConnection &operator=(const DatabaseConnection &) = delete;
+  DatabaseConnection &operator=(const DatabaseConnection &) = delete;
 
-    DatabaseConnection(DatabaseConnection &&) = delete;
+  DatabaseConnection(DatabaseConnection &&) = delete;
 
-    DatabaseConnection &operator=(DatabaseConnection &&) = delete;
+  DatabaseConnection &operator=(DatabaseConnection &&) = delete;
 
-    ~DatabaseConnection();
+  ~DatabaseConnection();
 
-    std::vector<std::vector<std::string> > Exec(const RequestValue &req, size_t columns_) const;
+  std::vector<std::vector<std::string> > Exec(const RequestValue &req,
+                                              size_t columns_) const;
 };
 
-
-#endif //DB_CONNECTION_H
+#endif  // DB_CONNECTION_H
