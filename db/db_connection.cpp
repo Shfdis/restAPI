@@ -36,6 +36,6 @@ std::vector<std::vector<std::string> > DatabaseConnection::Exec(
     }
     return result;
   } else {
-    throw new std::runtime_error("Failed to prepare statement");
+    throw std::runtime_error("Failed to prepare statement");
   }
 }
