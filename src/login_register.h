@@ -4,10 +4,11 @@
 
 #ifndef LOGIN_REGISTER_H
 #define LOGIN_REGISTER_H
-#include <string>
 #include <exception>
-#include "../db/db_connection.h"
+#include <string>
+
 #include "../crypto/crypto.h"
+#include "../db/db_connection.h"
 #include "settings.h"
 struct LoginMutexes {
   std::mutex signin_mutex;
@@ -21,17 +22,16 @@ struct LoginMutexes {
 };
 
 class UsernameTakenError : public std::logic_error {
-  public:
-  UsernameTakenError() : std::logic_error("Username taken") {
-
-  }
+ public:
+  UsernameTakenError() : std::logic_error("Username taken") {}
 };
-void sign_up(const std::string& username, const std::string& password, std::shared_ptr<LoginMutexes> login_mutexes);
+class WrongPasswordError : public std::logic_error {
+ public:
+  WrongPasswordError() : std::logic_error("Wrong password") {}
+};
+void sign_up(const std::string& username, const std::string& password,
+             std::shared_ptr<LoginMutexes> login_mutexes);
 // returns guid
-std::string sign_in(const std::string& username, const std::string& password);
-
-bool logout(const std::string& guid);
-
-bool is_logged_in(const std::string& guid, const std::string& username);
+std::string sign_in(const std::string& username, const std::string& password, std::shared_ptr<LoginMutexes> login_mutexes);
 
 #endif  // LOGIN_REGISTER_H
