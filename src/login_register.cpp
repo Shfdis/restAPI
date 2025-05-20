@@ -9,7 +9,7 @@ void sign_up(const std::string& username, const std::string& password,
   DatabaseConnection connection(Settings::DB_PATH);
   RequestValue in_db = SelectRequest::Select("*")
                            .From("passwords")
-                           .Where("id==\"" + username + "\"")
+                           .Where("id=\"" + username + "\"")
                            .Finalize();
   std::lock_guard lock(login_mutexes->signin_mutex);
   auto users = connection.Exec(in_db, 2);
@@ -26,11 +26,11 @@ void sign_up(const std::string& username, const std::string& password,
   }
 }
 std::string sign_in(const std::string& username, const std::string& password,
-                  std::shared_ptr<LoginMutexes> login_mutexes) {
+                    std::shared_ptr<LoginMutexes> login_mutexes) {
   DatabaseConnection connection(Settings::DB_PATH);
   RequestValue hash = SelectRequest::Select("hash")
                           .From("passwords")
-                          .Where("id==\"" + username + "\"")
+                          .Where("id=\"" + username + "\"")
                           .Finalize();
   auto users = connection.Exec(hash, 1);
   if (users.empty()) {
@@ -48,4 +48,15 @@ std::string sign_in(const std::string& username, const std::string& password,
           .Finalize();
   connection.Exec(insert_guid, 2);
   return guid;
-};
+}
+
+bool is_logged_in(const std::string& username, const std::string& guid) {
+  DatabaseConnection connection(Settings::DB_PATH);
+  RequestValue in_db =
+      SelectRequest::Select("*")
+          .From("guids")
+          .Where("id=\"" + username + "\"" + "and guid=\"" + guid + "\"")
+          .Finalize();
+  auto user = connection.Exec(in_db, 2);
+  return !user.empty();
+}

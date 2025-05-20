@@ -6,5 +6,7 @@ add_library(
         login_register.h
         settings.h
         settings.cpp
+        messages.cpp
+        messages.h
 )
 target_link_libraries(messenger network_handler db crypto)
