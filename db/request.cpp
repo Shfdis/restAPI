@@ -62,7 +62,7 @@ Request &Request::OrderByDesc(std::string field) {
     throw std::logic_error(
         "Request is not based on request type or table is not selected");
   }
-  request_ += " ORDER BY " + field + "DESC";
+  request_ += " ORDER BY " + field + " DESC";
   return *this;
 }
 

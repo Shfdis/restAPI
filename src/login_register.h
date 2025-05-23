@@ -15,7 +15,7 @@ struct LoginMutexes {
   static bool is_created;
   LoginMutexes() {
     if (is_created) {
-      throw std::logic_error("LoginMutexes is already created");
+      throw std::logic_error("is already created");
     }
     is_created = true;
   }
@@ -33,5 +33,5 @@ void sign_up(const std::string& username, const std::string& password,
              std::shared_ptr<LoginMutexes> login_mutexes);
 // returns guid
 std::string sign_in(const std::string& username, const std::string& password, std::shared_ptr<LoginMutexes> login_mutexes);
-
+bool is_logged_in(const std::string& username, const std::string& guid);
 #endif  // LOGIN_REGISTER_H
