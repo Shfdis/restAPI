@@ -104,4 +104,94 @@ void add_requests(Router& router) {
           res.body() = std::string("{\"status\":\"internal server error\"}");
         }
       });
+  router.add_path(
+      "POST", "/message", [group_mutexes](const auto& req, auto& res) {
+        res.set("content-type", "application/json");
+        try {
+          std::string body = req.body();
+          std::string id;
+          std::string guid;
+          uint64_t group_id = 0;
+          std::string content;
+          try {
+            boost::json::value json = boost::json::parse(body);
+            id = json.as_object().at("username").as_string();
+            guid = json.as_object().at("guid").as_string();
+            group_id = json.at("group_id").as_int64();
+            content = json.at("content").as_string();
+          } catch (...) {
+            throw std::logic_error("Failed to parse body");
+          }
+          if (!is_logged_in(id, guid)) {
+            throw std::logic_error("Failed to login");
+          }
+          send_message({group_id, id, content}, group_mutexes);
+          res.result(http::status::ok);
+          res.body() = "{\"status\":\"OK\"}";
+        } catch (const std::logic_error& e) {
+          res.result(http::status::bad_request);
+          res.body() = std::string("{\"status\":\"") + e.what() + "\"}";
+        } catch (const std::runtime_error& e) {
+          res.result(http::status::internal_server_error);
+          res.body() = std::string("{\"status\":\"internal server error\"}");
+        }
+      });
+  router.add_path("GET", "group", [group_mutexes](const auto& req, auto& res) {
+    res.set("content-type", "application/json");
+    try {
+      std::string body = req.body();
+      std::string id;
+      std::string guid;
+      try {
+        boost::json::value json = boost::json::parse(body);
+        id = json.as_object().at("username").as_string();
+        guid = json.as_object().at("guid").as_string();
+      } catch (...) {
+        throw std::logic_error("Failed to parse body");
+      }
+      if (!is_logged_in(id, guid)) {
+        throw std::logic_error("Failed to login");
+      }
+      std::string groups_sep_comma = get_all_groups(id);
+      res.result(http::status::ok);
+      res.body() = std::string("{\"status\":\"OK\",") + "\"group_ids\": [" +
+                   groups_sep_comma + +"]}";
+    } catch (const std::logic_error& e) {
+      res.result(http::status::bad_request);
+      res.body() = std::string("{\"status\":\"") + e.what() + "\"}";
+    } catch (const std::runtime_error& e) {
+      res.result(http::status::internal_server_error);
+      res.body() = std::string("{\"status\":\"internal server error\"}");
+    }
+  });
+  router.add_path(
+      "GET", "group/info", [group_mutexes](const auto& req, auto& res) {
+        res.set("content-type", "application/json");
+        try {
+          std::string body = req.body();
+          std::string id;
+          std::string guid;
+          uint64_t group_id = 0;
+          try {
+            boost::json::value json = boost::json::parse(body);
+            id = json.as_object().at("username").as_string();
+            guid = json.as_object().at("guid").as_string();
+            group_id = json.at("group_id").as_int64();
+          } catch (...) {
+            throw std::logic_error("Failed to parse body");
+          }
+          if (!is_logged_in(id, guid)) {
+            throw std::logic_error("Failed to login");
+          }
+          std::string group_info = get_group_info(group_id);
+          res.body() = std::string("{\"status\":\"OK\",") + group_info + "}";
+          res.result(http::status::ok);
+        } catch (const std::logic_error& e) {
+          res.result(http::status::bad_request);
+          res.body() = std::string("{\"status\":\"") + e.what() + "\"}";
+        } catch (const std::runtime_error& e) {
+          res.result(http::status::internal_server_error);
+          res.body() = std::string("{\"status\":\"internal server error\"}");
+        }
+      });
 }
